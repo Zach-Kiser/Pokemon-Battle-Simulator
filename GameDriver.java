@@ -2,16 +2,45 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class GameDriver {
-    ArrayList<Pokemon> playerTeam;
+    ArrayList<Pokemon> playerTeam = new ArrayList<Pokemon>();
     ArrayList<Pokemon> opponentTeam;
-    boolean isPlayerTurn;
+    boolean isPlayerTurn = true;
+    int currentPlayerPokemon = 0;
+    int currentOpponentPokemon = 0;
     
     public void playerTurn() {
-        
+        // Check if player has at least one Pokemon that is not fainted.
+        // If not, end the game.
+        for(int i = 0; i < playerTeam.size(); i++) {
+            if (!playerTeam.get(i).isFainted()) {
+                break;
+            }
+            if (i == playerTeam.size() - 1) {
+                System.out.println("YOU LOST");
+            }
+        }
+        System.out.println("Select a move to use: ");
+        System.out.prinln("1" + playerTeam.get(currentPlayerPokemon).
+                getMove1());
+        System.out.prinln("2" + playerTeam.get(currentPlayerPokemon).
+                getMove2());
+        System.out.prinln("3" + playerTeam.get(currentPlayerPokemon).
+                getMove3());
+        System.out.prinln("4" + playerTeam.get(currentPlayerPokemon).
+                getMove4());
+        System.out.println("Please input the corresponding number and "
+                + "then press ENTER.");
+
+        Scanner input = new Scanner(System.in);
+        int moveToUse = Integer.parseInt(input.nextLine());
+        opponentTeam.get(currentOpponentPokemon).damage(playerTeam.
+                get(currentPlayerPokemon).getMove1Damage());
+        isPlayerTurn = false;
     }
     
     public void opponentTurn() {
-        
+        Pokemon.POSSIBLE_MOVES()
+        isPlayerTurn = true;
     }
     
     public void swapPokemon() {
@@ -142,9 +171,11 @@ public class GameDriver {
         
         System.out.println("Choose a Pokemon to add to your team!"
                 + " (Type the corresponding number and press return/enter)");
-        input.nextLine();
+        int Pokemon1 = Integer.parseInt(input.nextLine());
         System.out.println("Choose a second Pokemon to add to your team!"
                 + " (Type the corresponding number and press return/enter)");
-        input.nextLine();
+        int Pokemon2 = Integer.parseInt(input.nextLine());
+        playerTeam.append(new Pokemon());
+        playerTeam.append(new Pokemon());
     }
 }
