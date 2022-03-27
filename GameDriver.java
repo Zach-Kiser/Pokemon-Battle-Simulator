@@ -39,13 +39,20 @@ public class GameDriver {
         
         System.out.println(playerName + "'s " + playerPokemon.getName() 
             + " used " + move.getMoveName() + "!");
-        System.out.println("The enemy " + opponentPokemon.getName() 
-            + " took " + move.getMoveAttack() + " damage!");
+        
+        boolean didMoveHit = opponentPokemon.
+                takeDamage(playerPokemon.moves[moveToUse]);
+        
+        if (didMoveHit) {
+            System.out.println("The enemy " + opponentPokemon.getName() 
+            + " took " + (opponentPokemon.getPreviousHP() 
+                    - opponentPokemon.getHP()) + " damage!");
+        } else {
+            System.out.println("The move missed!");
+        }
         System.out.println("[Type anything to continue]");
         input.nextLine();
         
-       
-        opponentPokemon.takeDamage(playerPokemon.moves[moveToUse]);
         isPlayerTurn = false;
     }
 
@@ -55,12 +62,20 @@ public class GameDriver {
             + opponentPokemon.getHP());
         int random = (int) (Math.random() * (3 - 1) + 1);
         Moves move = opponentPokemon.moves[random];
-        playerPokemon.takeDamage(move);
+        
         System.out.println("\u001B[0m"+ "The enemy " 
                 + opponentPokemon.getName() + " used " 
                 + move.getMoveName() + "!");
-        System.out.println(playerName + "'s " + playerPokemon.getName() 
-            + " took " + move.getMoveAttack() + " damage!");
+        
+        boolean didMoveHit = playerPokemon.takeDamage(move);
+
+        if (didMoveHit) {
+            System.out.println(playerName + "'s " + playerPokemon.getName() 
+                + " took " + (playerPokemon.getPreviousHP() 
+                        - playerPokemon.getHP()) + " damage!");
+        } else {
+            System.out.println("The attack missed!");
+        }
         System.out.println("[Type anything to continue]");
         Scanner input = new Scanner(System.in);
         input.nextLine();
@@ -79,6 +94,12 @@ public class GameDriver {
         for (int i = 0; i < 16; i++) {
             System.out.println();
         }
+        
+        System.out.println();
+        System.out.println("\t\t" + playerName + "'s " + playerPokemon.getName()
+                + "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t Enemy's " 
+                + opponentPokemon.getName());
+        
         
         // Output a border between the player and the enemy Pokemon.
         String[] border = new String[28];
@@ -99,6 +120,7 @@ public class GameDriver {
         
     }
     
+
     
 
     
@@ -301,10 +323,12 @@ public class GameDriver {
         opponentPokemon = new Pokemon(opponentPokemonName, 
                 opponentPokemonNum - 1);
                 
-        
+        // Main game loop, displays the game screen and alternates between
+        // the player and the opponent.
         while (checkGameStatus()) {
             displayVisuals();
             playerTurn();
+            checkGameStatus();
             displayVisuals();
             opponentTurn();
         }
