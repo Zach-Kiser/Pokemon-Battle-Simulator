@@ -3,35 +3,37 @@ public class Moves {
 
     private String name;
     private int attack;
+    private int type;
     
     public Moves(int type, int index) {
+        this.type = type;
         if (type == 0) {
             if (index == 0) {
-                name = "Tackle";
+                name = "Thunder Punch";
                 attack = 20;
             } else if (index == 1) {
                 name = "Thunderbolt";
                 attack = 30;
             } else if (index == 2) {
-                name = "Iron Tail";
+                name = "Volt Tackle";
                 attack = 20;
             }
             
         } else if (type == 1) {
             if (index == 0) {
-                name = "Tackle";
+                name = "Vine Whip";
                 attack = 20;
             } else if (index == 1) {
                 name = "Razor Leaf";
                 attack = 30;
             } else if (index == 2) {
-                name = "Earthquake";
+                name = "Solar Beam";
                 attack = 40;
             }
             
         } else if (type == 2) {
             if (index == 0) {
-                name = "Tackle";
+                name = "Bubble Beam";
                 attack = 20;
             } else if (index == 1) {
                 name = "Water Gun";
@@ -49,5 +51,9 @@ public class Moves {
     
     public String getMoveName() {
         return name;
+    }
+    
+    public int getMoveType() {
+        return type;
     }
 }
