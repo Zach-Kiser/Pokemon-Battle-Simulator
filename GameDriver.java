@@ -8,36 +8,51 @@ public class GameDriver {
     private static int currentPlayerPokemon = 0;
     private static int currentOpponentPokemon = 0;
     private static boolean gameOver = false;
+    private static String playerName = "Player";
 
     public static void playerTurn() {
         System.out.println("Select a move to use: ");
-        System.out.println(
-                "1" + playerPokemon.getMove1());
-        System.out.println(
-                "2" + playerPokemon.getMove2());
-        System.out.println(
-                "3" + playerPokemon.getMove3());
-        System.out.println(
-                "4" + playerPokemon.getMove4());
+        for (int i = 0; i < 3; i++) {
+            System.out.println(i + " " + playerPokemon.moves[i].getMoveName());
+        }
         System.out.println("Please input the corresponding number and "
                 + "then press ENTER.");
 
         Scanner input = new Scanner(System.in);
-        int moveToUse = Integer.parseInt(input.nextLine());
+        String line = input.nextLine();
+        int moveToUse = Integer.parseInt(line);
+        Moves move = playerPokemon.moves[moveToUse];
         
         
-        // Implement using the move, ex: the opponent taking damage.
+        System.out.println(playerName + "'s " + playerPokemon.getName() 
+            + " used " + move.getMoveName() + "!");
+        System.out.println("The enemy " + opponentPokemon.getName() 
+            + " took " + move.getMoveAttack() + " damage!");
+        System.out.println("[Type anything to continue]");
         
-        
+        input.nextLine();
+        input.close();
+       
+        opponentPokemon.takeDamage(playerPokemon.moves[moveToUse]);
         isPlayerTurn = false;
     }
 
     public static void opponentTurn() {
-        Pokemon.POSSIBLE_MOVES()
+        int random = (int) (Math.random() * (3 - 1) + 1);
+        Moves move = opponentPokemon.moves[random];
+        playerPokemon.takeDamage(move);
+        System.out.println("The enemy " + opponentPokemon.getName() + " used "
+                + move.getMoveName() + "!");
+        System.out.println(playerName + "'s " + playerPokemon.getName() 
+            + " took " + move.getMoveAttack() + " damage!");
+        System.out.println("[Type anything to continue]");
+        Scanner input = new Scanner(System.in);
+        input.nextLine();
         isPlayerTurn = true;
     }
     
     public static void displayVisuals() {
+        // Output a block of text to differentiate different game screens.
         for (int i = 0; i < 50; i++) {
             for (int j = 0; j < 500; j++) {
                 System.out.print("*");
@@ -45,12 +60,22 @@ public class GameDriver {
             System.out.println();
         }
         
-        System.out.println(playerPokemon);
-        System.out.println();
-        System.out.println("********************VS***********************");
-        System.out.println();
-        System.out.println(opponentPokemon);
+        // Output a border between the player and the enemy Pokemon.
+        String[] border = new String[20];
+        for (int j = 0; j < 20; j++) {
+            if (j == 10) {
+                border[j] = "VS";
+            } else {
+                border[j] = "*";
+            }
+        }
+        
+        outputHelper(playerPokemon.toString().split("\n"), 
+                border, opponentPokemon.toString().split("\n"));
     }
+    
+    
+
     
     public static boolean checkGameStatus() {
         if (playerPokemon.getIsFainted()) {
@@ -64,149 +89,164 @@ public class GameDriver {
         return true;
     }
 
+    
+    public static void outputHelper(String[] text1, String[] text2,
+            String[] text3) {
+
+        // Get the max height and width dimensions to format all pokemon.
+        int maxLineWidth = 0;
+        int maxHeight = 0;
+        int height = 0;
+        
+        for (int i = 0; i < text1.length; i++) {
+            if (text1[i].length() > maxLineWidth) {
+                maxLineWidth = text1[i].length();
+            }
+            height++;
+        }
+        
+        
+        if (height > maxHeight) {
+            maxHeight = height;
+        }
+        height = 0;
+        
+        for (int i = 0; i < text2.length; i++) {
+            if (text2[i].length() > maxLineWidth) {
+                maxLineWidth = text2[i].length();
+            }
+            height++;
+        }
+        
+        if (height > maxHeight) {
+            maxHeight = height;
+        }
+        height = 0;
+        
+        
+        for (int i = 0; i < text3.length; i++) {
+            if (text3[i].length() > maxLineWidth) {
+                maxLineWidth = text3[i].length();
+            }
+            height++;
+        }
+        
+        if (height > maxHeight) {
+            maxHeight = height;
+        }
+        height = 0;
+        
+        
+        
+        // Print characters side by side.
+        for (int i = 0; i < maxHeight; i++) {
+            
+            //First check if this character's height has already been output.
+            int firstPokemonHeight = text1.length;
+            
+            if (i >= firstPokemonHeight) {
+                for (int j = 0; j < maxLineWidth; j++) {
+                    System.out.print(" ");
+                }
+            } else {
+            
+                
+                // Check if character's width has been completely output.
+                int firstPokemonLineWidth = text1[i].length();
+                
+                System.out.print("\u001B[33m" + text1[i]);
+                while (firstPokemonLineWidth < maxLineWidth) {
+                    System.out.print(" ");
+                    firstPokemonLineWidth++;
+                }
+            }
+
+            
+            
+            
+            
+            
+            //First check if this character's height has already been output.
+            int secondPokemonHeight = text2.length;
+            
+            if (i >= secondPokemonHeight) {
+                for (int j = 0; j < maxLineWidth; j++) {
+                    System.out.print(" ");
+                }
+            } else {
+            
+            
+                // Check if character's width has been completely output.
+                int secondPokemonLineWidth = text2[i].length();
+                
+                System.out.print("\u001B[32m" + text2[i]);
+                while (secondPokemonLineWidth < maxLineWidth) {
+                    System.out.print(" ");
+                    secondPokemonLineWidth++;
+                }
+            }
+            
+            
+            //First check if this character's height has already been output.
+            int thirdPokemonHeight = text3.length;
+            
+            if (i >= thirdPokemonHeight) {
+                for (int j = 0; j < maxLineWidth; j++) {
+                    System.out.print(" ");
+                }
+            } else {
+                
+                
+                // Check if character's width has been completely output.
+                int thirdPokemonLineWidth = text3[i].length();
+                
+                System.out.print("\u001B[34m" + text3[i]);
+                while (thirdPokemonLineWidth < maxLineWidth) {
+                    System.out.print(" ");
+                    thirdPokemonLineWidth++;
+                }
+                
+            }
+            
+            System.out.println();
+        }
+    }
 
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
-        System.out.println("\u001B[33m"
-                + "                                  ,'\\\n"
-                + "    _.----.        ____         ,'  _\\   ___    ___     ____\n"
-                + "_,-'       `.     |    |  /`.   \\,-'    |   \\  /   |   |    \\  |`.\n"
-                + "\\      __    \\    '-.  | /   `.  ___    |    \\/    |   '-.   \\ |  |\n"
-                + " \\.    \\ \\   |  __  |  |/    ,','_  `.  |          | __  |    \\|  |\n"
-                + "   \\    \\/   /,' _`.|      ,' / / / /   |          ,' _`.|     |  |\n"
-                + "    \\     ,-'/  /   \\    ,'   | \\/ / ,`.|         /  /   \\  |     |\n"
-                + "     \\    \\ |   \\_/  |   `-.  \\    `'  /|  |    ||   \\_/  | |\\    |\n"
-                + "      \\    \\ \\      /       `-.`.___,-' |  |\\  /| \\      /  | |   |\n"
-                + "       \\    \\ `.__,'|  |`-._    `|      |__| \\/ |  `.__,'|  | |   |\n"
-                + "        \\_.-'       |__|    `-._ |              '-.|     '-.| |   |\n"
-                + "                                `'                            '-._|"
-                + "\u001B[0m");
+        System.out.println(PokemonUtil.LOGO);
         System.out.println("Welcome to the Pokemon Battle Simulator! "
                 + "[Press anything to continue]");
         input.nextLine();
-        System.out.println("1");
-        System.out.println("\u001B[33m" + "quu..__\n" + " $$$b  `---.__\n"
-                + "  \"$$b        `--.                          ___.---uuudP\n"
-                + "   `$$b           `.__.------.__     __.---'      $$$$\"              .\n"
-                + "     \"$b          -'            `-.-'            $$$\"              .'|\n"
-                + "       \".                                       d$\"             _.'  |\n"
-                + "         `.   /                              ...\"             .'     |\n"
-                + "           `./                           ..::-'            _.'       |\n"
-                + "            /                         .:::-'            .-'         .'\n"
-                + "           :                          ::''\\          _.'            |\n"
-                + "          .' .-.             .-.           `.      .'               |\n"
-                + "          : /'$$|           .@\"$\\           `.   .'              _.-'\n"
-                + "         .'|$u$$|          |$$,$$|           |  <            _.-'\n"
-                + "         | `:$$:'          :$$$$$:           `.  `.       .-'\n"
-                + "         :                  `\"--'             |    `-.     \\\n"
-                + "        :##.       ==             .###.       `.      `.    `\\\n"
-                + "        |##:                      :###:        |        >     >\n"
-                + "        |#'     `..'`..'          `###'        x:      /     /\n"
-                + "         \\                                   xXX|     /    ./\n"
-                + "          \\                                xXXX'|    /   ./\n"
-                + "          /`-.                                  `.  /   /\n"
-                + "         :    `-  ...........,                   | /  .'\n"
-                + "         |         ``:::::::'       .            |<    `.\n"
-                + "         |             ```          |           x| \\ `.:``.\n"
-                + "         |                         .'    /'   xXX|  `:`M`M':.\n"
-                + "         |    |                    ;    /:' xXXX'|  -'MMMMM:'\n"
-                + "         `.  .'                   :    /:'       |-'MMMM.-'\n"
-                + "          |  |                   .'   /'        .'MMM.-'\n"
-                + "          `'`'                   :  ,'          |MMM<\n"
-                + "            |                     `'            |tbap\\\n"
-                + "             \\                                  :MM.-'\n"
-                + "              \\                 |              .''\n"
-                + "               \\.               `.            /\n"
-                + "                /     .:::::::.. :           /\n"
-                + "               |     .:::::::::::`.         /\n"
-                + "               |   .:::------------\\       /\n"
-                + "              /   .''               >::'  /\n"
-                + "              `',:                 :    .'\n"
-                + "                                   `:.:'\n" + "\u001B[0m"
-                + "");
-        System.out.println("2");
-        System.out.println("\u001B[32m"
-                + "                                           /\n"
-                + "                        _,.------....___,.' ',.-.\n"
-                + "                     ,-'          _,.--\"        |\n"
-                + "                   ,'         _.-'              .\n"
-                + "                  /   ,     ,'                   `\n"
-                + "                 .   /     /                     ``.\n"
-                + "                 |  |     .                       \\.\\\n"
-                + "       ____      |___._.  |       __               \\ `.\n"
-                + "     .'    `---\"\"       ``\"-.--\"'`  \\               .  \\\n"
-                + "    .  ,            __               `              |   .\n"
-                + "    `,'         ,-\"'  .               \\             |    L\n"
-                + "   ,'          '    _.'                -._          /    |\n"
-                + "  ,`-.    ,\".   `--'                      >.      ,'     |\n"
-                + " . .'\\'   `-'       __    ,  ,-.         /  `.__.-      ,'\n"
-                + " ||:, .           ,'  ;  /  / \\ `        `.    .      .'/\n"
-                + " j|:D  \\          `--'  ' ,'_  . .         `.__, \\   , /\n"
-                + "/ L:_  |                 .  \"' :_;                `.'.'\n"
-                + ".    \"\"'                  \"\"\"\"\"'                    V\n"
-                + " `.                                 .    `.   _,..  `\n"
-                + "   `,_   .    .                _,-'/    .. `,'   __  `\n"
-                + "    ) \\`._        ___....----\"'  ,'   .'  \\ |   '  \\  .\n"
-                + "   /   `. \"`-.--\"'         _,' ,'     `---' |    `./  |\n"
-                + "  .   _  `\"\"'--.._____..--\"   ,             '         |\n"
-                + "  | .\" `. `-.                /-.           /          ,\n"
-                + "  | `._.'    `,_            ;  /         ,'          .\n"
-                + " .'          /| `-.        . ,'         ,           ,\n"
-                + " '-.__ __ _,','    '`-..___;-...__   ,.'\\ ____.___.'\n"
-                + " `\"^--'..'   '-`-^-'\"--    `-^-'`.''\"\"\"\"\"`.,^.`.--'"
-                + "\u001B[0m");
-        System.out.println("3");
-        System.out.println("\u001B[34m" + "               _,........__\n"
-                + "            ,-'            \"`-.\n"
-                + "          ,'                   `-.\n"
-                + "        ,'                        \\\n"
-                + "      ,'                           .\n"
-                + "      .'\\               ,\"\".       `\n"
-                + "     ._.'|             / |  `       \\\n"
-                + "     |   |            `-.'  ||       `.\n"
-                + "     |   |            '-._,'||       | \\\n"
-                + "     .`.,'             `..,'.'       , |`-.\n"
-                + "     l                       .'`.  _/  |   `.\n"
-                + "     `-.._'-   ,          _ _'   -\" \\  .     `\n"
-                + "`.\"\"\"\"\"'-.`-...,---------','         `. `....__.\n"
-                + ".'        `\"-..___      __,'\\          \\  \\     \\\n"
-                + "\\_ .          |   `\"\"\"\"'    `.           . \\     \\\n"
-                + "  `.          |              `.          |  .     L\n"
-                + "    `.        |`--...________.'.        j   |     |\n"
-                + "      `._    .'      |          `.     .|   ,     |\n"
-                + "         `--,\\       .            `7\"\"' |  ,      |\n"
-                + "            ` `      `            /     |  |      |    _,-'\"\"\"`-.\n"
-                + "             \\ `.     .          /      |  '      |  ,'          `.\n"
-                + "              \\  v.__  .        '       .   \\    /| /              \\\n"
-                + "               \\/    `\"\"\\\"\"\"\"\"\"\"`.       \\   \\  /.''                |\n"
-                + "                `        .        `._ ___,j.  `/ .-       ,---.     |\n"
-                + "                ,`-.      \\         .\"     `.  |/        j     `    |\n"
-                + "               /    `.     \\       /         \\ /         |     /    j\n"
-                + "              |       `-.   7-.._ .          |\"          '         /\n"
-                + "              |          `./_    `|          |            .     _,'\n"
-                + "              `.           / `----|          |-............`---'\n"
-                + "                \\          \\      |          |\n"
-                + "               ,'           )     `.         |\n"
-                + "                7____,,..--'      /          |\n"
-                + "                                  `---.__,--.'"
-                + "\u001B[0m");
+        System.out.println("Please enter your name and press ENTER"
+                + " to continue:");
+        playerName = input.nextLine();
+        
 
+        String[] firstPokemon = PokemonUtil.PIKACHU.split("\n");
+        String[] secondPokemon = PokemonUtil.BULBASAUR.split("\n");
+        String[] thirdPokemon = PokemonUtil.SQUIRTLE.split("\n");
         
+
+        outputHelper(firstPokemon, secondPokemon, thirdPokemon);
         
-        
+        System.out.println("\u001B[0m" + "\t\t\t 1 \t\t\t\t\t\t\t\t 2 "
+                + "\t\t\t\t\t\t\t\t\t\t\t 3");
+        System.out.println();
+        System.out.println();
         
         
         
         System.out.println("Choose a Pokemon to add to your team!"
                 + " (Type the corresponding number and press return/enter)");
         
-        int Pokemon1 = Integer.parseInt(input.nextLine());
+        int pokemon1 = Integer.parseInt(input.nextLine());
         String pokemon1Name = "";
-        if (Pokemon1 == 1) {
+        if (pokemon1 == 1) {
             pokemon1Name = "Pikachu";
-        } else if (Pokemon1 == 2) {
+        } else if (pokemon1 == 2) {
             pokemon1Name = "Bulbasaur";
-        } else if (Pokemon1 == 3) {
+        } else if (pokemon1 == 3) {
             pokemon1Name = "Squirtle";
         }
         
@@ -215,7 +255,7 @@ public class GameDriver {
         
         
         // Randomly sets the opposing Pokemon.
-        double opponentPokemonNum = (int) (Math.random() * (3 - 1) + 1);
+        int opponentPokemonNum = (int) (Math.random() * (3 - 1) + 1);
         String opponentPokemonName = "";
         
         if (opponentPokemonNum == 1) {
@@ -226,17 +266,15 @@ public class GameDriver {
             opponentPokemonName = "Squirtle";
         }
         
-        playerPokemon = new Pokemon(pokemon1Name);
-        opponentPokemon = new Pokemon(opponentPokemonName);
+        playerPokemon = new Pokemon(pokemon1Name, pokemon1);
+        opponentPokemon = new Pokemon(opponentPokemonName, opponentPokemonNum);
+                
         
-        
-        
-        // Main game loop.
-        displayVisuals();
-        
-//        while (checkGameStatus) {
-//            playerTurn();
-//            opponentTurn();
-//        }
+        while (checkGameStatus()) {
+            displayVisuals();
+            playerTurn();
+            displayVisuals();
+            opponentTurn();
+        }
     }
 }
