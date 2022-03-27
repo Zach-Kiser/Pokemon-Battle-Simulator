@@ -11,37 +11,53 @@ public class GameDriver {
     private static String playerName = "Player";
 
     public static void playerTurn() {
+        System.out.println("\u001B[0m" + "\t\t\tHP: " + playerPokemon.getHP() 
+            + "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tHP: " 
+                + opponentPokemon.getHP());
         System.out.println("Select a move to use: ");
         for (int i = 0; i < 3; i++) {
             System.out.println(i + " " + playerPokemon.moves[i].getMoveName());
         }
-        System.out.println("Please input the corresponding number and "
-                + "then press ENTER.");
 
         Scanner input = new Scanner(System.in);
-        String line = input.nextLine();
+        
+        String line = "";
+        while(!(line.equals("0") || line.equals("1") || 
+                line.equals("2"))) {
+            System.out.println("Please input the corresponding number and "
+                    + "then press ENTER.");
+            line = input.nextLine();
+        }
         int moveToUse = Integer.parseInt(line);
         Moves move = playerPokemon.moves[moveToUse];
         
+        
+        for (int i = 0; i < 238; i++) {
+            System.out.print("*");
+        }
+        System.out.println();
         
         System.out.println(playerName + "'s " + playerPokemon.getName() 
             + " used " + move.getMoveName() + "!");
         System.out.println("The enemy " + opponentPokemon.getName() 
             + " took " + move.getMoveAttack() + " damage!");
         System.out.println("[Type anything to continue]");
-        
         input.nextLine();
-        input.close();
+        
        
         opponentPokemon.takeDamage(playerPokemon.moves[moveToUse]);
         isPlayerTurn = false;
     }
 
     public static void opponentTurn() {
+        System.out.println("\u001B[0m"+ "\t\t\tHP: " + playerPokemon.getHP() 
+        + "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tHP: " 
+            + opponentPokemon.getHP());
         int random = (int) (Math.random() * (3 - 1) + 1);
         Moves move = opponentPokemon.moves[random];
         playerPokemon.takeDamage(move);
-        System.out.println("The enemy " + opponentPokemon.getName() + " used "
+        System.out.println("\u001B[0m"+ "The enemy " 
+                + opponentPokemon.getName() + " used " 
                 + move.getMoveName() + "!");
         System.out.println(playerName + "'s " + playerPokemon.getName() 
             + " took " + move.getMoveAttack() + " damage!");
@@ -54,15 +70,19 @@ public class GameDriver {
     public static void displayVisuals() {
         // Output a block of text to differentiate different game screens.
         for (int i = 0; i < 50; i++) {
-            for (int j = 0; j < 500; j++) {
+            for (int j = 0; j < 238; j++) {
                 System.out.print("*");
             }
             System.out.println();
         }
         
+        for (int i = 0; i < 16; i++) {
+            System.out.println();
+        }
+        
         // Output a border between the player and the enemy Pokemon.
-        String[] border = new String[20];
-        for (int j = 0; j < 20; j++) {
+        String[] border = new String[28];
+        for (int j = 0; j < 28; j++) {
             if (j == 10) {
                 border[j] = "VS";
             } else {
@@ -72,6 +92,11 @@ public class GameDriver {
         
         outputHelper(playerPokemon.toString().split("\n"), 
                 border, opponentPokemon.toString().split("\n"));
+        
+        for (int i = 0; i < 15; i++) {
+            System.out.println();
+        }
+        
     }
     
     
@@ -179,7 +204,7 @@ public class GameDriver {
                 // Check if character's width has been completely output.
                 int secondPokemonLineWidth = text2[i].length();
                 
-                System.out.print("\u001B[32m" + text2[i]);
+                System.out.print("\u001B[0m" + text2[i]);
                 while (secondPokemonLineWidth < maxLineWidth) {
                     System.out.print(" ");
                     secondPokemonLineWidth++;
@@ -237,10 +262,16 @@ public class GameDriver {
         
         
         
-        System.out.println("Choose a Pokemon to add to your team!"
-                + " (Type the corresponding number and press return/enter)");
+        String line = "";
+        while(!(line.equals("1") || line.equals("2") || 
+                line.equals("3"))) {
+            System.out.println("Choose a Pokemon to add to your team!"
+                    + " (Type the corresponding number "
+                    + "and press return/enter)");
+            line = input.nextLine();
+        }
         
-        int pokemon1 = Integer.parseInt(input.nextLine());
+        int pokemon1 = Integer.parseInt(line);
         String pokemon1Name = "";
         if (pokemon1 == 1) {
             pokemon1Name = "Pikachu";
@@ -266,8 +297,9 @@ public class GameDriver {
             opponentPokemonName = "Squirtle";
         }
         
-        playerPokemon = new Pokemon(pokemon1Name, pokemon1);
-        opponentPokemon = new Pokemon(opponentPokemonName, opponentPokemonNum);
+        playerPokemon = new Pokemon(pokemon1Name, pokemon1 - 1);
+        opponentPokemon = new Pokemon(opponentPokemonName, 
+                opponentPokemonNum - 1);
                 
         
         while (checkGameStatus()) {
